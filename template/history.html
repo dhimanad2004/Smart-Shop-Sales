@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction History - SmartShop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #1a2a6c 0%, #2d4a9e 40%, #4e73df 100%);
+            min-height: 100vh;
+        }
+        /* ─── TOP NAV ─── */
+        .topnav {
+            background: rgba(15, 25, 80, 0.82);
+            backdrop-filter: blur(10px);
+            padding: 0 30px;
+            height: 64px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .topnav .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topnav .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .topnav .title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: white;
+        }
+        .topnav .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header_nav {
+            color: rgba(255,255,255,0.88) !important;
+            text-decoration: none !important;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 18px;
+            border-radius: 8px;
+            transition: all 0.25s;
+            border: 1px solid transparent;
+        }
+        .header_nav:hover {
+            background: rgba(255,255,255,0.18);
+            color: #fff !important;
+            border-color: rgba(255,255,255,0.25);
+        }
+        .header_nav.active {
+            background: rgba(255,255,255,0.22);
+            color: #fff !important;
+            border-color: rgba(255,255,255,0.35);
+        }
+        /* ─── PAGE WRAPPER ─── */
+        .page-wrapper { padding: 24px 28px 40px; }
+        /* ─── PAGE HEADER ─── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+        .page-header h3 {
+            margin: 0 0 4px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .page-header h3 i {
+            color: #f6c23e;
+            margin-right: 8px;
+        }
+        .page-header p {
+            margin: 0;
+            font-size: 13px;
+            color: rgba(255,255,255,0.60);
+        }
+        /* ─── STATS ROW ─── */
+        .stat-glass {
+            background: rgba(255,255,255,0.13);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 14px;
+            padding: 16px 22px;
+            text-align: center;
+            transition: transform 0.25s;
+        }
+        .stat-glass:hover { transform: translateY(-4px); }
+        .stat-glass .stat-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+        }
+        .stat-glass .stat-lbl {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.65);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+        .stat-glass .stat-icon {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+        /* ─── SEARCH / FILTER BAR ─── */
+        .filter-bar {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-bar .filter-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .search-input {
+            border: 1.5px solid rgba(255,255,255,0.3);
+            border-radius: 9px;
+            padding: 8px 14px;
+            font-size: 13.5px;
+            color: #1e2a50;
+            background: rgba(255,255,255,0.92);
+            outline: none;
+            transition: all 0.2s;
+            min-width: 220px;
+        }
+        .search-input:focus {
+            border-color: #fff;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+        }
+        .filter-select-sm {
+            border: 1.5px solid rgba(255,255,255,0.3);
+            border-radius: 9px;
+            padding: 8px 32px 8px 12px;
+            font-size: 13px;
+            color: #1e2a50;
+            background-color: rgba(255,255,255,0.92);
+            outline: none;
+            transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234e73df' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            cursor: pointer;
+        }
+        .filter-select-sm:focus { border-color: #fff; background-color: #fff; }
+        .total-count-badge {
+            margin-left: auto;
+            background: rgba(255,255,255,0.18);
+            color: white;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.28);
+            white-space: nowrap;
+        }
+        /* ─── TABLE CARD ─── */
+        .table-card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .table-card-header {
+            background: linear-gradient(135deg, #1a3a8f, #4e73df);
+            padding: 15px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .table-card-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .table-card-header i { color: #f6c23e; font-size: 16px; }
+        .table-card-header h5 {
+            margin: 0;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .record-badge {
+            background: rgba(255,255,255,0.18);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        /* ─── TABLE ─── */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        .history-table thead tr th {
+            background: #f0f4ff;
+            color: #1e2a50;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 16px;
+            border-bottom: 2px solid #dde2ef;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .history-table tbody tr td {
+            padding: 13px 16px;
+            font-size: 13.5px;
+            color: #2d3655;
+            border-bottom: 1px solid #f0f2f8;
+            text-align: center;
+        }
+        .history-table tbody tr:last-child td { border-bottom: none; }
+        .history-table tbody tr:hover td { background: #f4f7ff; }
+        /* ─── BADGES ─── */
+        .prediction-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(78,115,223,0.12), rgba(111,66,193,0.12));
+            color: #4e73df;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(78,115,223,0.25);
+        }
+        .size-badge {
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 3px 11px;
+            border-radius: 20px;
+        }
+        .size-badge.small  { background: rgba(28,200,138,0.12); color: #17a673; border: 1px solid rgba(28,200,138,0.3); }
+        .size-badge.medium { background: rgba(246,194,62,0.12); color: #c9890a; border: 1px solid rgba(246,194,62,0.35); }
+        .size-badge.high   { background: rgba(231,74,59,0.11);  color: #c0392b; border: 1px solid rgba(231,74,59,0.28); }
+        .tier-badge {
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 3px 11px;
+            border-radius: 20px;
+            background: rgba(54,185,204,0.12);
+            color: #1a7a8c;
+            border: 1px solid rgba(54,185,204,0.3);
+        }
+        /* ─── ROW NUMBER ─── */
+        .row-num {
+            font-size: 12px;
+            font-weight: 700;
+            color: #9aa0b4;
+            background: #f0f2f8;
+            border-radius: 6px;
+            padding: 2px 8px;
+        }
+        /* ─── EMPTY STATE ─── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9aa0b4;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #c5cde8;
+        }
+        .empty-state h5 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #6c7898;
+            margin-bottom: 6px;
+        }
+        .empty-state p {
+            font-size: 13.5px;
+            margin: 0;
+        }
+        .btn-go-predict {
+            display: inline-block;
+            margin-top: 18px;
+            background: linear-gradient(135deg, #1a3a8f, #4e73df);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 10px 28px;
+            font-size: 13.5px;
+            font-weight: 700;
+            transition: all 0.25s;
+            box-shadow: 0 4px 14px rgba(78,115,223,0.3);
+        }
+        .btn-go-predict:hover {
+            background: linear-gradient(135deg, #4e73df, #6f42c1);
+            transform: translateY(-2px);
+            color: white;
+        }
+        /* ─── PAGINATION ─── */
+        .pagination-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-top: 1.5px solid #f0f2f8;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .pagination-info {
+            font-size: 13px;
+            color: #7a8499;
+        }
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            .page-wrapper { padding: 16px 14px 30px; }
+            .topnav       { padding: 0 16px; }
+            .topnav .title{ font-size: 16px; }
+            .filter-bar   { gap: 8px; }
+            .search-input { min-width: 160px; }
+        }
+    </style>
+</head>
+<body>
+<!-- ═══════════════════ TOP NAV ═══════════════════ -->
+<div class="topnav">
+    <div class="brand">
+        <div class="brand-icon">
+            <i class="fa-solid fa-store"></i>
+        </div>
+        <span class="title">SmartShop Sales Forecasting</span>
+    </div>
+    <div class="nav-links">
+        <a class="header_nav" href="../">
+            <i class="fa-solid fa-gauge-high" style="margin-right:5px;font-size:12px;"></i>Dashboard
+        </a>
+        <a class="header_nav" href="ai_recomendation">
+            <i class="fa-solid fa-robot" style="margin-right:5px;font-size:12px;"></i>AI Recommendation
+        </a>
+        <a class="header_nav active" href="history">
+            <i class="fa-solid fa-clock-rotate-left" style="margin-right:5px;font-size:12px;"></i>History
+        </a>
+    </div>
+</div>
+<!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+<div class="page-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Prediction History</h3>
+            <p>All past AI sales predictions stored in the system</p>
+        </div>
+        <a href="ai_recomendation" class="btn-go-predict" style="margin-top:0;">
+            <i class="fa-solid fa-robot" style="margin-right:7px;"></i>New Prediction
+        </a>
+    </div>
+    <!-- ── Quick Stats ── -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="stat-glass">
+                <div class="stat-icon" style="color:#7eb8ff;">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div class="stat-num">{{ historical_Data|length }}</div>
+                <div class="stat-lbl">Total Predictions</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-glass">
+                <div class="stat-icon" style="color:#5effc3;">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <div class="stat-num">
+                    {{ historical_Data|length }}
+                </div>
+                <div class="stat-lbl">Outlets Covered</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-glass">
+                <div class="stat-icon" style="color:#ffd97d;">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+                <div class="stat-num">16</div>
+                <div class="stat-lbl">Item Categories</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-glass">
+                <div class="stat-icon" style="color:#ff9a9a;">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="stat-num">AI</div>
+                <div class="stat-lbl">Powered by ML Model</div>
+            </div>
+        </div>
+    </div>
+    <!-- ── Filter / Search Bar ── -->
+    <div class="filter-bar">
+        <div class="filter-icon">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <input class="search-input"
+               type="text"
+               id="searchInput"
+               placeholder="Search by outlet, item type, location...">
+        <select class="filter-select-sm" id="sizeFilter">
+            <option value="">All Sizes</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+        <select class="filter-select-sm" id="tierFilter">
+            <option value="">All Tiers</option>
+            <option value="Tier 1">Tier 1</option>
+            <option value="Tier 2">Tier 2</option>
+            <option value="Tier 3">Tier 3</option>
+        </select>
+        <span class="total-count-badge" id="visibleCount">
+            <i class="fa-solid fa-database" style="margin-right:5px;"></i>
+            <span id="countNum">{{ historical_Data|length }}</span> Records
+        </span>
+    </div>
+    <!-- ── Table Card ── -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="header-left">
+                <i class="fa-solid fa-table-list"></i>
+                <h5>All Prediction Records</h5>
+            </div>
+            <span class="record-badge">
+                {{ historical_Data|length }} Total
+            </span>
+        </div>
+        {% if historical_Data %}
+        <div class="table-responsive">
+            <table class="history-table" id="historyTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>
+                            <i class="fa-solid fa-store" style="color:#4e73df;margin-right:5px;"></i>
+                            Outlet Type
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-location-dot" style="color:#4e73df;margin-right:5px;"></i>
+                            Location
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-expand" style="color:#4e73df;margin-right:5px;"></i>
+                            Size
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-tag" style="color:#4e73df;margin-right:5px;"></i>
+                            Item Type
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-droplet" style="color:#4e73df;margin-right:5px;"></i>
+                            Fat Content
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-weight-hanging" style="color:#4e73df;margin-right:5px;"></i>
+                            Weight
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-indian-rupee-sign" style="color:#4e73df;margin-right:5px;"></i>
+                            MRP
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-eye" style="color:#4e73df;margin-right:5px;"></i>
+                            Availability
+                        </th>
+                        <th>
+                            <i class="fa-solid fa-robot" style="color:#4e73df;margin-right:5px;"></i>
+                            AI Prediction
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    {% for i in historical_Data %}
+                    <tr>
+                        <td><span class="row-num">{{ forloop.counter }}</span></td>
+                        <td><strong>{{ i.Outlet_Type }}</strong></td>
+                        <td>
+                            <span class="tier-badge">{{ i.Outlet_Location_Type }}</span>
+                        </td>
+                        <td>
+                            {% if i.Outlet_Size == 'Small' %}
+                                <span class="size-badge small">Small</span>
+                            {% elif i.Outlet_Size == 'Medium' %}
+                                <span class="size-badge medium">Medium</span>
+                            {% else %}
+                                <span class="size-badge high">High</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ i.Item_Type }}</td>
+                        <td>{{ i.Item_Fat_Content }}</td>
+                        <td>{{ i.Item_Weight }} kg</td>
+                        <td>Rs. {{ i.Item_MRP }}</td>
+                        <td>{{ i.Item_Visibility }}</td>
+                        <td>
+                            <span class="prediction-badge">
+                                Rs. {{ i.Item_Outlet_Sales| floatformat:2 }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination info -->
+        <div class="pagination-wrap">
+            <span class="pagination-info" id="paginationInfo">
+                Showing all <strong>{{ historical_Data|length }}</strong> records
+            </span>
+        </div>
+        {% else %}
+        <!-- Empty state -->
+        <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <h5>No Predictions Yet</h5>
+            <p>You haven't made any predictions. Start by entering product details.</p>
+            <a href="ai_recomendation" class="btn-go-predict">
+                <i class="fa-solid fa-robot" style="margin-right:7px;"></i>Make First Prediction
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div><!-- end page-wrapper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    /* ── Live search + filter ── */
+    const searchInput  = document.getElementById('searchInput');
+    const sizeFilter   = document.getElementById('sizeFilter');
+    const tierFilter   = document.getElementById('tierFilter');
+    const tbody        = document.getElementById('historyBody');
+    const countNum     = document.getElementById('countNum');
+    const paginInfo    = document.getElementById('paginationInfo');
+    function filterTable() {
+        if (!tbody) return;
+        const q    = searchInput.value.toLowerCase();
+        const size = sizeFilter.value.toLowerCase();
+        const tier = tierFilter.value.toLowerCase();
+        const rows = tbody.querySelectorAll('tr');
+        let visible = 0;
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const matchQ    = text.includes(q);
+            const matchSize = size === '' || text.includes(size);
+            const matchTier = tier === '' || text.includes(tier);
+            if (matchQ && matchSize && matchTier) {
+                row.style.display = '';
+                visible++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        countNum.textContent = visible;
+        if (paginInfo) {
+            paginInfo.innerHTML = `Showing <strong>${visible}</strong> of <strong>${rows.length}</strong> records`;
+        }
+    }
+    if (searchInput) searchInput.addEventListener('input',  filterTable);
+    if (sizeFilter)  sizeFilter.addEventListener('change',  filterTable);
+    if (tierFilter)  tierFilter.addEventListener('change',  filterTable);
+</script>
+</body>
+</html>
