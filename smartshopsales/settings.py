@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-%$^i-l#vtf&o9=fs(mju+^2&!=zenb#v+7o)((if7hh#2#&xn+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['smart-shop-sales.onrender.com', 'localhost', '127.0.0.1']
+
 
 
 # Application definition
