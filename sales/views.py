@@ -17,8 +17,10 @@ def dashboard(request):
     print(tier_count)
     #finding the avg  sales 
     tier_count=len(tier_count)
-    avg_tier_count=round(total_sales/tier_count)
-
+    if tier_count > 0:
+        avg_tier_count=round(total_sales/tier_count)
+    else:
+        avg_tier_count=0
     #count no of item 
     item_count=SmartShopSales.objects.all().values_list('Item_Type',flat=True).distinct()
     print(item_count)
