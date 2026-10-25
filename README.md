@@ -2,6 +2,8 @@
 
 A Django web application integrated with a Machine Learning pipeline to predict store sales. 
 
+🔗 **[View Live Demo](https://smart-shop-sales.onrender.com/)**
+
 ## Features
 * **Machine Learning Pipeline:** Uses a Random Forest Regressor to predict sales.
 * **Prediction Form:** Interactive UI to input store parameters and get instant sales estimates.
